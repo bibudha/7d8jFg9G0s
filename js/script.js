@@ -1,5 +1,6 @@
 var Host = document.domain;
 var baseUrl = 'http://198.50.99.226/~admin/';
+
 var menuLength;
 var MenuLimit = 4;		// global set accrding to theme
 var isMoreActive;	// global set according by user
@@ -458,7 +459,7 @@ function menuData(obj) {
 	
     if (featureId == 6) {
         //getfanwallTab(html);
-        window.location.href = "getfanwallTab.html?mId=" + featureId + "&transferId=" + featureRelId + "&touchId=" + userSiteId +"&featureName=" + featureName;
+        window.location.href = "getfanwallTab.html?mId=" + featureId + "&transferId=" + featureRelId + "&touchId=" + userSiteId;
     }
 	 if (featureId == 7) {
         //Arround us Tab
@@ -526,10 +527,11 @@ function menuData(obj) {
 		//Direction view Tab
 		window.location.href="directions.html?mId=" + featureId + "&transferId=" + featureRelId + "&touchId=" + userSiteId;
 	}
-	if(featureId == 33){
-		//Event Tab2
-		//window.location.href="directions.html?mId=" + featureId + "&transferId=" + featureRelId + "&touchId=" + userSiteId;
-	}
+	if (featureId == 33) {
+        //geteventTab(html);
+        window.location.href = "geteventTab.html?mId=" + featureId + "&transferId=" + featureRelId + "&touchId=" + userSiteId +"&featureName=" + featureName;
+
+    }
 	if (featureId == 34) {
         //callUSInfo(html);
         window.location.href = "fanwall2.html?mId=" + featureId + "&transferId=" + featureRelId + "&touchId=" + userSiteId ;
@@ -631,27 +633,23 @@ function aboutUSInfo() {
             var data = '<ul data-role="listview" data-inset="false" data-divider-theme="d" id="aboutclass">';
 			
             $.each(html, function (i, item) {
-                if (item.parentId == 0) {
+                if (item.parentId) {
                     data += '<li data-role="list-divider">' + item.section + '</li>';
                     if (i % 2 == 0) {
                         className = 'evenbg';
                     } else {
                         className = 'oddbg';
                     }
-                    data += '<li class="'+className+'"><a href="AboutUsDescription.html?itemId=' + item.itemId + '&touchId=' + userSiteId + '&featureName=' + item.name + '" rel="external" >' + item.name + '</a></li>';
-                    $.each(html, function (i, innerItem) {
-                        if (item.itemId == innerItem.parentId) {
-                            //alert('child'+innerItem.itemId);
-                            data += '<li><a href="AboutUsDescription.html?itemId=' + item.itemId + '&touchId=' + userSiteId + '" rel="external">' + innerItem.name + '&featureName=' + item.name +'</a></li>';
-                        }
-                    })
-                }
-                backGroundColor = item.globalBackground;
+                    data += '<li class="'+className+'"><a href="AboutUsDescription.html?itemId=' + item.itemId + '&touchId=' + userSiteId + '&featureName=' + item.name + '" rel="external" ><img src="'+baseUrl+item.thumbnail+'"height="100" width="100"/>' + item.name + '</a></li>';
+                  backGroundColor = item.globalBackground;
                 textColor = item.globalTextColor;
-                $('#main-content').css({ 'background-color': '#' + backGroundColor, 'color': '#' + textColor });
+                }
+                
+                
             })
             data += '</ul>';
             $('#main-content').html(data);
+			$('#main-content').css({ 'background-color': '#' + backGroundColor, 'color': '#' + textColor });
             try {
                 $("#aboutclass").listview('refresh');
             } catch (e) {
@@ -681,6 +679,7 @@ function getAboutData() {
         $('title,.header-content h1').html(menuhtml);
         $('.header-content .back').show();
         $('#main-content').html(html[0].description);
+		$('#main-content').css({ 'background-color': '#' + html[0].globalBackground, 'color': '#' + html[0].globalTextColor });
     });
 	getUserAppereance();
 }
@@ -856,7 +855,7 @@ function infoTab3Info() {
 			
 			 
                 data += '<li  data-role="list-divider">' + item.catSection + '</li>';
-                data += '<li class="' + className + '"><a  rel="external" href="infotab3category.html?&categoryId=' + item.categoryId + '&info3id=' + item.info3id + '&mId=' + featureId + '&featureRelId=' + featureRelId + '&touchId=' + userSiteId + '&featureName=' + item.catName + '">' + item.catName + '</a></li>';
+                data += '<li class="' + className + '"><a  rel="external" href="infotab3category.html?&categoryId=' + item.categoryId + '&info3id=' + item.info3id + '&mId=' + featureId + '&featureRelId=' + featureRelId + '&touchId=' + userSiteId + '&featureName=' + item.catName + '"><img src="'+baseUrl+item.catImage+'" width="100" height="100"/>' + item.catName + '</a></li>';
                 backGroundColor = item.globalBackground;
                 textColor = item.globalTextColor;
                 $('#main-content').css({ 'background-color': '#' + backGroundColor, 'color': '#' + textColor });
@@ -934,7 +933,7 @@ function getInfo3Data() {
 			
                 data += '<li data-role="list-divider">' + item.section + '</li>';
 				
-                data += '<li class="'+className+'"><a href="infotab3description.html?itemId=' + item.itemId + '&touchId=' + userSiteId + '&featureName=' + item.name + '" rel="external">' + item.name + '</a></li>';
+                data += '<li class="'+className+'"><a href="infotab3description.html?itemId=' + item.itemId + '&touchId=' + userSiteId + '&featureName=' + item.name + '" rel="external"><img src="'+baseUrl+item.thumbnail+'" width="100" height="100" />' + item.name + '</a></li>';
                 $.each(html, function (i, innerItem) {
                     if (item.itemId == innerItem.parentId) {
                         //alert('child'+innerItem.itemId);
@@ -965,6 +964,7 @@ function getInfo3Data() {
     });
 }
 function getInfo3Desc() {
+var backGroundColor,textColor;
     var userSiteId = getUrlVars()['touchId'];
     var itemId = getUrlVars()['itemId'];
 	var featureName = getUrlVars()['featureName'];
@@ -980,7 +980,9 @@ function getInfo3Desc() {
         //console.log(html);
         $('title,.header-content h1').html(menuhtml);
         $('#main-content').html(html[0].Description);
-
+		backGroundColor = html[0].globalBackground;
+            textColor = html[0].globalTextColor;
+$('#main-content').css({ 'background-color': '#' + backGroundColor, 'color': '#' + textColor });
     });
 	getUserAppereance();
 }
@@ -1012,24 +1014,17 @@ function menuTabInfo() {
 
             var data = '<ul data-role="listview" data-inset="false" data-divider-theme="d" id="aboutclass">';
             $.each(html, function (i, item) {
-
-                if (i == 0) {
-                    data += '<li data-role="list-divider">' + item.section + '</li>';
-                    data += '<li><a href="menuDescription.html?id=' + item.menuId + '&transferId=' + featureRelId + '&touchId=' + userSiteId + '&mId=' + featureId + '&featureName=' + item.name + '" rel="external" >' + item.name + '<p class="ui-li-aside"><strong>' + item.price + '</strong></p></a></li>';
-                    $.each(html, function (i, innerItem) {
-                        if (item.menuId == innerItem.parentId) {
-                            //alert('child'+innerItem.itemId);
-                            if (i % 2 == 0) {
+			if (i % 2 == 0) {
                                 className = 'evenbg';
                             } else {
                                 className = 'oddbg';
                             }
-                            data += '<li class="' + className + '"><a href="menuDescription.html?id=' + item.menuId + '&transferId=' + featureRelId + '&touchId=' + userSiteId + '&mId=' + featureId +'&featureName=' + innerItem.name + '" rel="external">' + innerItem.name + '<p class="ui-li-aside"><strong>' + item.price + '</strong></p></a></li>';
-                        }
-                    })
-                }
+                data += '<li data-role="list-divider">' + item.section + '</li>';
+                    data += '<li><a href="menuDescription.html?id=' + item.menuId + '&transferId=' + featureRelId + '&touchId=' + userSiteId + '&mId=' + featureId + '&featureName=' + item.name + '" rel="external"><img src="'+baseUrl+item.thumbnail+'" width="100" height="100"/>' + item.name + '<p class="ui-li-aside"><strong>' + item.price + '</strong></p></a></li>';
+                   
+                
 
-            })
+            });
             data += '</ul>';
             $('#main-content').html(data);
             try {
@@ -1087,15 +1082,17 @@ function artistInfoTab() {
     var data = '';
     doAjaxCall(url, data, false, function (html) {
         if ($.isEmptyObject(html)) {
-            $('#main-content').html('Sorry we have an info Tab data');
+            $('#main-content').html('Sorry we do not have data');
         } else {
+		 
 			var featureName='';
             var backGroundColor, textColor, description;
             $.each(html, function (i, item) {
                 backGroundColor = item.globalBackground;
                 textColor = item.globalTextColor;
-                description = item.description;
+                description= '<div><img src="'+baseUrl+item.thumbnail+'"width="100" height="100"/>'+item.description+'</div>';
                 featureName = item.featureName;
+				
             })
             if (description == '') {
                 $('#main-content').html('Sorry We Have An Empty Data');
@@ -1719,7 +1716,7 @@ function readmeRss() {
         } else {
 			console.log(html);
             $.each(html, function (i, item) {
-			if(i== id){
+			if(i==id){
 			//alert('dsa');
                 var RssDescriptionrel = item.link;
                 var mobileBackground = item.mobileBackground;
@@ -1959,7 +1956,51 @@ var url = baseUrl + 'web/web/getFanwall2Post/' + featureRelId + '/' + userSiteId
   			 user_fb_profile_pic=item.user_fb_profile_pic;
 user_fb_profile_pic = user_fb_profile_pic.replace(/\//g,'^');
 					//user_fb_profile_pic = encodeURIComponent(orignal);			
-  			htmlData += '<li><a href="fanwall2-comments-inner.html?profile_pic='+user_fb_profile_pic +'&userName=' + item.fb_user_name + '&userComment='+ item.comment_text+'&featureRelId='+featureRelId+'&userSIteId='+userSiteId+'&comment_id='+item.comment_id+'" rel="external" ><img src="'+item.user_fb_profile_pic+'" class="media_poster"><h3>'+item.fb_user_name +'</h3><hr><p>'+item.comment_text+'</p> <p class="ui-li-aside"><strong>'+item.comment_date+'</strong></p><p class="pull-right" data-role="button" data-theme="e" data-mini="true">Reply</p></a></li>';
+  			htmlData += '<li><a href="fanwall2-comments-inner.html?&featureRelId='+featureRelId+'&userSIteId='+userSiteId+'&comment_id='+item.comment_id+'" rel="external" ><img src="'+item.user_fb_profile_pic+'" class="media_poster"><h3>'+item.fb_user_name +'</h3><hr><p>'+item.comment_text+'</p> <p class="ui-li-aside"><strong>'+item.comment_date+'</strong></p><p class="pull-right" data-role="button" data-theme="e" data-mini="true">Reply</p></a></li>';
+  			});
+  			htmlData +='</ul>'
+			
+           
+        }
+		$('#tab1').html(htmlData);	
+  		 try {
+        $("#albumDetails").listview('refresh');
+  		} catch (e) {
+  			$("#albumDetails").listview();
+  		}
+        getUserAppereance();
+    });
+}
+//--------FanWall 1
+function getfanwall1data(){
+
+var featureRelId = getUrlVars()['transferId'];
+
+var userSiteId = getUrlVars()['touchId'];
+
+var featureId = getUrlVars()['mId'];
+$("#userSIteId").val(userSiteId);
+$("#featRelId").val(featureRelId);
+$("#featureId").val(featureId);
+var url = baseUrl + 'web/web/getFanwall2Post/' + featureRelId + '/' + userSiteId;
+
+ var data = '';
+ var htmlData="";
+    doAjaxCall(url, data, false, function (html) {
+	
+        if ($.isEmptyObject(html)) {
+		alert('sorry there is no post');
+            $('#tab1').html('Sorry we have no data for fanwall tab');
+			
+        } else {
+		
+		var user_fb_profile_pic="";
+		htmlData = '<ul data-role="listview" data-inset="false" data-divider-theme="d" id="albumDetails"  class="nowrap clearfix" >'
+  			$.each(html,function(i,item){
+  			 user_fb_profile_pic=item.user_fb_profile_pic;
+user_fb_profile_pic = user_fb_profile_pic.replace(/\//g,'^');
+					//user_fb_profile_pic = encodeURIComponent(orignal);			
+  			htmlData += '<li><a href="fanwall1-comments-inner.html?&featureRelId='+featureRelId+'&userSIteId='+userSiteId+'&comment_id='+item.comment_id+'" rel="external" ><img src="'+item.user_fb_profile_pic+'" class="media_poster"><h3>'+item.fb_user_name +'</h3><hr><p>'+item.comment_text+'</p> <p class="ui-li-aside"><strong>'+item.comment_date+'</strong></p><p class="pull-right" data-role="button" data-theme="e" data-mini="true">Reply</p></a></li>';
   			});
   			htmlData +='</ul>'
 			
@@ -1975,6 +2016,7 @@ user_fb_profile_pic = user_fb_profile_pic.replace(/\//g,'^');
     });
 }
 
+//---------
 /*function getPreviousFbdata()
 {
 var featureRelId = getUrlVars()['featurerelId'];
@@ -2026,56 +2068,84 @@ var url = baseUrl + 'web/web/insertFanwall2Post';
 		}
     });
 }
+//--------
+function insertfanwall1data(){
+var featureRelId = getUrlVars()['featurerelId'];
+var userSiteId = getUrlVars()['siteId'];
+var user_id = getUrlVars()['user_id'];
+var fb_user_name = getUrlVars()['fb_user_name'];
+var featureId = getUrlVars()['featureId'];
+var user_fb_name=fb_user_name.replace(/\%20/g,' ');
+//alert('user_fb_name= '+user_fb_name);
+var fb_profile_pic = getUrlVars()['fb_profile_pic'];
+//alert(fb_profile_pic);
+var fb_profile_picc = fb_profile_pic.replace(/\^/g,'/');
+					           //fb_profile_pic = encodeURIComponent(orignal);
+							   //alert('after changing in insertion='+fb_profile_picc);
+		$('#userSIteId').val(userSiteId);
+		$('#featRelId').val(featureRelId);
+		$('#user_Fbid').val(user_id);
+		$('#fb_profile_pic').val(fb_profile_picc);
+		$('#fb_user_name').val(user_fb_name);
+		
+		$('#featureId').val(featureId);
+		
+var url = baseUrl + 'web/web/insertFanwall2Post';
+//alert(url);
+ var data = $('#frm_post').serialize();
+ //alert('data= '+data);
+    doAjaxCall(url, data, false, function (html) {
+	//alert('inside doAjaxCall');
+        if (html==1) {
+		alert('data inserted');
+		window.location.href = "getfanwallTab.html?mId=" + featureId + "&transferId=" + featureRelId + "&touchId=" + userSiteId ;
+
+        } else {
+		alert('data is not inserted');
+		}
+    });
+}
+//--------
 function getfan2commentsinnerdata(){
-
-//alert("hello");
 var featureRelId = getUrlVars()['featureRelId'];
-//alert(featureRelId);
 var userSiteId = getUrlVars()['userSIteId'];
-//alert(userSiteId);
-var profile_pic = getUrlVars()['profile_pic'];
 var comment_id = getUrlVars()['comment_id'];
-//alert(comment_id);
- profile_pic = profile_pic.replace(/\^/g,'/');
- //alert(profile_pic);
-
-var userName = getUrlVars()['userName'];
-userName = userName.replace(/\%20/g,' ');
-//alert(userName);
-var comment_text = getUrlVars()['userComment'];
-//alert(comment_text);
-
 $('#usersiteIdd').val(userSiteId);
-//alert('sachin='+sachin);
 $("#featureRelId").val(featureRelId);
-$("#profile_pic").val(profile_pic);
-$("#userName").val(userName);
-$("#comment_text").val(comment_text);
 $("#comment_id").val(comment_id);
  var htmlData="";
- htmlData = '<ul data-role="listview" data-inset="false" data-divider-theme="d" id="albumDetails"  class="nowrap clearfix" >'
-  			
-  				
-  			htmlData += '<li><img src="'+profile_pic+'" class="media_poster"><h3>'+userName+'</h3><hr><p>'+comment_text+'</p> <p class="ui-li-aside"><strong>'+'comment_date'+'</strong></p><p class="pull-right" data-role="button" data-theme="e" data-mini="true">Reply</p></li>';
  var url = baseUrl + 'web/web/getFanwall2subcommentPost/' + featureRelId + '/' + userSiteId + '/' +comment_id; 			
 
- var data = $('#sub_comment').serialize();
+ var data = "";
     doAjaxCall(url, data, false, function (html) {
         if ($.isEmptyObject(html)) {
             $('#tab1').html('Sorry we have no data for fanwall tab');
-			alert('sorry there is no comment post');
-			htmlData +='</ul>'
+			//alert('sorry there is no comment post');
+
         } else {
-		$.each(html,function(i,item){			
-  			htmlData += '<li><img src="'+item.user_fb_profile_pic+'" class="media_poster"><h3>'+item.fb_user_name +'</h3><hr><p>'+item.sub_comment_text+'</p> <p class="ui-li-aside"><strong>'+item.comment_date+'</strong></p><p class="pull-right" data-role="button" data-theme="e" data-mini="true">Reply</p></li>';
+		$.each(html,function(i,item){	
+		
+			if(item.parent_id == 0 )
+				{
+				$("#image_media").attr('src',item.user_fb_profile_pic);
+				$("#user_name").html(item.fb_user_name);
+				$("#comment_textt").html(item.comment_text);
+				$("#comment_date").html(item.comment_date);
+				}
+			else
+				{
+				htmlData += '<div><img src="'+item.user_fb_profile_pic+'" class="media_poster"><h3>'+item.fb_user_name +'</h3><hr><p>'+item.comment_text+'</p> <p class="ui-li-aside"><strong>'+item.comment_date+' </strong></p></div>';
+				}
+							
   			});
-  			htmlData +='</ul>'
+
 			
            
         }
 		$('#tab1').html(htmlData);	
   		 try {
         $("#albumDetails").listview('refresh');
+        
   		} catch (e) {
   			$("#albumDetails").listview();
   		}
@@ -2083,6 +2153,55 @@ $("#comment_id").val(comment_id);
     }); 					
 
 }
+//---------
+function getfan1commentsinnerdata(){
+var featureRelId = getUrlVars()['featureRelId'];
+var userSiteId = getUrlVars()['userSIteId'];
+var comment_id = getUrlVars()['comment_id'];
+$('#usersiteIdd').val(userSiteId);
+$("#featureRelId").val(featureRelId);
+$("#comment_id").val(comment_id);
+ var htmlData="";
+ var url = baseUrl + 'web/web/getFanwall2subcommentPost/' + featureRelId + '/' + userSiteId + '/' +comment_id; 			
+
+ var data = "";
+    doAjaxCall(url, data, false, function (html) {
+        if ($.isEmptyObject(html)) {
+            $('#tab1').html('Sorry we have no data for fanwall tab');
+			//alert('sorry there is no comment post');
+
+        } else {
+		$.each(html,function(i,item){	
+		
+			if(item.parent_id == 0 )
+				{
+				$("#image_media").attr('src',item.user_fb_profile_pic);
+				$("#user_name").html(item.fb_user_name);
+				$("#comment_textt").html(item.comment_text);
+				$("#comment_date").html(item.comment_date);
+				}
+			else
+				{
+				htmlData += '<div><img src="'+item.user_fb_profile_pic+'" class="media_poster"><h3>'+item.fb_user_name +'</h3><hr><p>'+item.comment_text+'</p> <p class="ui-li-aside"><strong>'+item.comment_date+' </strong></p></div>';
+				}
+							
+  			});
+
+			
+           
+        }
+		$('#tab1').html(htmlData);	
+  		 try {
+        $("#albumDetails").listview('refresh');
+        
+  		} catch (e) {
+  			$("#albumDetails").listview();
+  		}
+        getUserAppereance();
+    }); 					
+
+}
+//--------
 function insertchildfanwall2data(){
 var featureRelId = getUrlVars()['featurerelId'];
 var userSiteId = getUrlVars()['siteId'];
@@ -2090,12 +2209,8 @@ var user_id = getUrlVars()['user_id'];
 var fb_user_name = getUrlVars()['fb_user_name'];
 var comment_id = getUrlVars()['comment_id'];
 var user_fb_name=fb_user_name.replace(/\%20/g,' ');
-//alert('user_fb_name= '+user_fb_name);
 var fb_profile_pic = getUrlVars()['fb_profile_pic'];
-//alert(fb_profile_pic);
 var fb_profile_picc = fb_profile_pic.replace(/\^/g,'/');
-					           
-							   //alert('after changing in insertion='+fb_profile_picc);
 		$('#userSIteId').val(userSiteId);
 		$('#featRelId').val(featureRelId);
 		$('#user_Fbid').val(user_id);
@@ -2103,22 +2218,48 @@ var fb_profile_picc = fb_profile_pic.replace(/\^/g,'/');
 		$('#fb_user_name').val(user_fb_name);
 		$('#comment_id').val(comment_id);
 		var comment_text =$('#child_comment').val();
-		
+	var data = $('#frm_post').serialize();
 var url = baseUrl + 'web/web/insertchildFanwall2Post/'+comment_id;
-//alert(url);
- var data = $('#frm_post').serialize();
- //alert('data= '+data);
     doAjaxCall(url, data, false, function (html) {
-	alert('inside doAjaxCall');
         if (html==1) {
 		//alert('data inserted');
-		window.location.href = "fanwall2-comments-inner.html?profile_pic="+fb_profile_pic +"&userName="+ user_fb_name + "&userComment="+ comment_text+"&featureRelId="+featureRelId+"&userSIteId="+userSiteId+"&comment_id="+comment_id;
+		window.location.href = "fanwall2-comments-inner.html?&featureRelId="+featureRelId+"&userSIteId="+userSiteId+"&comment_id="+comment_id;
 
         } else {
 		alert('data is not inserted');
 		}
     });
 }
+//-------->
+function insertchildfanwall1data(){
+var featureRelId = getUrlVars()['featurerelId'];
+var userSiteId = getUrlVars()['siteId'];
+var user_id = getUrlVars()['user_id'];
+var fb_user_name = getUrlVars()['fb_user_name'];
+var comment_id = getUrlVars()['comment_id'];
+var user_fb_name=fb_user_name.replace(/\%20/g,' ');
+var fb_profile_pic = getUrlVars()['fb_profile_pic'];
+var fb_profile_picc = fb_profile_pic.replace(/\^/g,'/');
+		$('#userSIteId').val(userSiteId);
+		$('#featRelId').val(featureRelId);
+		$('#user_Fbid').val(user_id);
+		$('#fb_profile_pic').val(fb_profile_picc);
+		$('#fb_user_name').val(user_fb_name);
+		$('#comment_id').val(comment_id);
+		var comment_text =$('#child_comment').val();
+	var data = $('#frm_post').serialize();
+var url = baseUrl + 'web/web/insertchildFanwall2Post/'+comment_id;
+    doAjaxCall(url, data, false, function (html) {
+        if (html==1) {
+		//alert('data inserted');
+		window.location.href = "fanwall1-comments-inner.html?&featureRelId="+featureRelId+"&userSIteId="+userSiteId+"&comment_id="+comment_id;
+
+        } else {
+		alert('data is not inserted');
+		}
+    });
+}
+//------
 /******************************/
 /*							*/
 /*	GLOBAL FUNCTIONS		*/
@@ -2464,22 +2605,21 @@ function showMap() {
 		var userSiteId = getUrlVars()['touchId'];
 		var featureId = getUrlVars()['mId'];
 		var lat = getUrlVars()['lat'];
-		var longi = getUrlVars()['long']; location
+		var longi = getUrlVars()['long']; 
 		var userLocation = getUrlVars()['location'];
     if (lat == '' || lat == undefined || lat == null) {
         userLocation = ' another location';
+		alert(userLocation);
     }
     var i = 0;
     if (lat != '' && lat != undefined && lat != null) {
         i++;
+		
     }
-    if (lat != '' && lat != undefined && lat != null) {
-        i++;
-    }
-    if (i == 2) {
+    if (i == 1) {
 
         var html = "";
-        html += "<div style='padding:10px'><h4>Points showing <strong>your current location</strong> and <strong>and entered location</strong></h4> </div>";
+        html += "<div style='padding:10px'><h4>Points showing <strong>your current location and entered location</strong></h4> </div>";
 		
 		var showButton='<div data-role="controlgroup" data-type="horizontal"> <a href="tel:'+telephone+'" data-role="button"  data-iconpos="top">Call us</a>  <a rel="external" href="detail.html?id=0&transferId='+featureRelId+'&touchId=' + userSiteId + '&mId=' + featureId + '&return_url=' + website + '" data-role="button" data-iconpos="top">Website</a>   <a rel="external" href="mailto:'+email+'?Subject=share location?body=latitude is '+lat+' and longitude is '+longi+'" data-role="button"  data-iconpos="top">Email</a></div>';
         $('#direction-detail').html(html);
@@ -2494,7 +2634,7 @@ function showMap() {
 		
                 if (status === 'OK') {
                     var clientPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                    
+                 
                     $('#map_canvas').gmap('addMarker', { 'position': clientPosition, 'bounds': true }).click(function () {
                         $('#map_canvas').gmap('openInfoWindow', { 'content': '<div>My current location</div>' }, this);
                     });
@@ -2588,7 +2728,7 @@ function directionViewTab() {
     var userSiteId = getUrlVars()['touchId'];
     var featureId = getUrlVars()['mId'];
     var url = baseUrl + 'web/web/getMenuHtml/' + featureId + '/' + featureRelId + '/' + userSiteId;
-    alert(url);
+    
     var data = '';
     doAjaxCall(url, data, false, function (html) {
         if ($.isEmptyObject(html)) {
